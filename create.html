@@ -59,13 +59,13 @@
   <section class="panel" data-step="4">
     <div class="result">
       <div class="big">🎉</div><h2>Your surprise draft is saved!</h2>
-      <p class="hint">Your design has been saved to your account's database. You can preview it, download the HTML, or continue editing it. Public sharing is not available yet.</p>
+      <p class="hint">Your draft is saved privately. Publish it to create a shareable online link.</p>
       <div class="linkbox"><input id="link" readonly placeholder="Public link will appear after publishing" aria-label="Public surprise link"><button class="btn small" id="copy" type="button" disabled>Copy</button></div>
       <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
-        <button class="btn" id="open" type="button">Preview surprise</button><button class="btn ghost" id="dl" type="button">⬇ Download HTML</button><button class="btn ghost" id="edit" type="button">✏ Continue editing</button>
+        <button class="btn" id="publishOnline" type="button">Publish &amp; Generate Link</button><button class="btn ghost" id="open" type="button">Preview surprise</button><button class="btn ghost" id="dl" type="button">⬇ Download HTML</button><button class="btn ghost" id="edit" type="button">✏ Continue editing</button>
         <a class="btn ghost" href="create.html" onclick="sessionStorage.removeItem('ps_draft')">+ New surprise</a>
       </div>
-      <div class="warn" id="shareWarn">Your draft is saved privately. Downloaded HTML is a separate file; it is not a published website. Online publishing and payment verification are not connected yet.</div>
+      <div class="warn" id="shareWarn">Your draft is private until you publish it. Publishing creates a public link. Payment verification is not connected yet.</div>
     </div>
   </section>
 </div>

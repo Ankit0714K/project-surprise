@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Admin — Project Surprise</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="wrap">
+  <nav class="nav">
+    <a class="logo" href="index.html">🎁 <span class="grad">Project Surprise</span> <span class="pill">admin</span></a>
+    <div><a class="link" href="create.html">+ New site</a></div>
+  </nav>
+
+  <div class="stats">
+    <div class="card"><span style="color:var(--mute)">Sites</span><b id="sSites">0</b></div>
+    <div class="card"><span style="color:var(--mute)">Total views</span><b id="sViews">0</b></div>
+    <div class="card"><span style="color:var(--mute)">Locked</span><b id="sLock">0</b></div>
+    <div class="card"><span style="color:var(--mute)">Top template</span><b id="sTop" style="font-size:1.1rem;margin-top:10px">—</b></div>
+  </div>
+
+  <div style="display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap">
+    <button class="btn ghost small" id="exp">⬇ Export all (JSON)</button>
+    <label class="btn ghost small" style="cursor:pointer">⬆ Import JSON<input type="file" id="imp" accept="application/json" hidden></label>
+    <button class="btn danger small" id="wipe">Delete everything</button>
+  </div>
+
+  <div class="tablewrap">
+    <table>
+      <thead><tr><th>For</th><th>From</th><th>Template</th><th>Views</th><th>Created</th><th>Actions</th></tr></thead>
+      <tbody id="rows"></tbody>
+    </table>
+    <div class="empty" id="empty" style="display:none">No sites yet. <a href="create.html" style="color:var(--accent)">Create the first one →</a></div>
+  </div>
+</div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/supabase.js"></script>
+<script src="js/templates.js"></script>
+<script src="js/store.js"></script>
+<script src="js/supabase-repository.js"></script>
+<script>
+
+"use strict";
+
+const $ = (s) => document.querySelector(s);
+
+let drafts = [];
+
+const name = (id) =>
+  (PS.TEMPLATES.find((t) => t.id === id) || {}).name || id;
+
+function mapDraft(row) {
+  const content = row.content || {};
+
+  return {
+    ...content,
+    id: row.id,
+    title: row.title || "Untitled surprise",
+    occasion: row.occasion || "birthday",
+    to: content.to || "",
+    from: content.from || "",
+    templateId: content.templateId || "",
+    photos: Array.isArray(content.photos) ? content.photos : [],
+    views: Number(content.views || 0),
+    password: content.password || "",
+    createdAt: content.createdAt || row.created_at,
+    updatedAt: row.updated_at,
+    status: row.status
+  };
+}
+
+async function draw() {
+  const tbody = $("#rows");
+  tbody.innerHTML =
+    '<tr><td colspan="6">Loading your saved drafts...</td></tr>';
+
+  try {
+    const rows = await window.SurpriseRepository.listMyDrafts();
+    drafts = rows.map(mapDraft);
+
+    $("#sSites").textContent = drafts.length;
+    $("#sViews").textContent =
+      drafts.reduce((total, site) => total + site.views, 0);
+    $("#sLock").textContent =
+      drafts.filter((site) => site.password).length;
+
+    const counts = {};
+    drafts.forEach((site) => {
+      const template = site.templateId || "Unknown";
+      counts[template] = (counts[template] || 0) + 1;
+    });
+
+    const top = Object.entries(counts)
+      .sort((a, b) => b[1] - a[1])[0];
+
+    $("#sTop").textContent = top
+      ? name(top[0]) + " (" + top[1] + ")"
+      : "—";
+
+    $("#empty").style.display = drafts.length ? "none" : "block";
+
+    tbody.innerHTML = drafts.map((site) => `
+      <tr>
+        <td>${PS.esc(site.to || site.title)}${site.password ? " 🔒" : ""}</td>
+        <td>${PS.esc(site.from || "—")}</td>
+        <td><span class="pill">${PS.esc(name(site.templateId))}</span></td>
+        <td>${site.views}</td>
+        <td>${site.createdAt
+          ? new Date(site.createdAt).toLocaleDateString()
+          : "—"}</td>
+        <td style="white-space:nowrap">
+          <button class="btn ghost small"
+            onclick="previewDraft('${site.id}')">Preview</button>
+          <a class="btn ghost small" href="create.html?edit=${site.id}">Edit</a>
+          <button class="btn ghost small" disabled
+            title="Public publishing is not enabled yet">Link</button>
+          <button class="btn ghost small"
+            onclick="downloadDraft('${site.id}')">HTML</button>
+          <button class="btn danger small"
+            onclick="deleteDraft('${site.id}')">Delete</button>
+        </td>
+      </tr>
+    `).join("");
+
+  } catch (error) {
+    console.error("Admin loading error:", error);
+    tbody.innerHTML = `
+      <tr><td colspan="6">
+        Could not load drafts. Check your login session and connection,
+        then refresh the page.
+      </td></tr>`;
+    $("#empty").style.display = "none";
+  }
+}
+
+function findDraft(id) {
+  return drafts.find((site) => site.id === id);
+}
+
+function previewDraft(id) {
+  const site = findDraft(id);
+  if (!site) return alert("Draft not found.");
+
+  const preview = window.open("", "_blank");
+
+  if (!preview) {
+    alert("Allow pop-ups to preview your surprise.");
+    return;
+  }
+
+  preview.document.open();
+  preview.document.write(PS.renderSite(site));
+  preview.document.close();
+}
+
+function downloadDraft(id) {
+  const site = findDraft(id);
+  if (!site) return alert("Draft not found.");
+
+  const blob = new Blob([PS.renderSite(site)], {
+    type: "text/html;charset=utf-8"
+  });
+
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+
+  a.href = url;
+  a.download =
+    (site.to || "surprise").toLowerCase().replace(/\W+/g, "-") +
+    ".html";
+
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+async function deleteDraft(id) {
+  const site = findDraft(id);
+  if (!site) return alert("Draft not found.");
+
+  if (site.status !== "draft") {
+    return alert("Only drafts can be deleted from this panel.");
+  }
+
+  if (!confirm("Delete this draft permanently?")) return;
+
+  try {
+    await window.SurpriseRepository.deleteMyDraft(id);
+    await draw();
+  } catch (error) {
+    console.error("Delete error:", error);
+    alert("Draft could not be deleted. Please check the connection.");
+  }
+}
+
+$("#exp").onclick = () => {
+  const blob = new Blob([JSON.stringify(drafts, null, 2)], {
+    type: "application/json"
+  });
+
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+
+  a.href = url;
+  a.download = "project-surprise-backup.json";
+  a.click();
+
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+};
+
+$("#imp").disabled = true;
+$("#wipe").disabled = true;
+
+$("#imp").parentElement.title =
+  "Import will be enabled after secure database import is implemented.";
+
+$("#wipe").title =
+  "Bulk deletion is disabled to protect your saved database drafts.";
+
+draw();
+
+</script>
+</body>
+</html>

@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Project Surprise — Make a little moment unforgettable</title>
+<meta name="description" content="Create a personal surprise website for love, birthdays, friendship and special moments. No coding needed.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="wrap">
+  <nav class="nav">
+    <a class="logo" href="index.html"><span class="logo-mark">✦</span><span>Project <span class="grad">Surprise</span></span></a>
+    <div class="navlinks">
+      <a class="link" href="#how">How it works</a>
+      <a class="link" href="#templates">Templates</a>
+      <a class="link" href="#pricing">Plans</a>
+      <a class="link" href="admin.html">My workspace</a>
+      <a class="link nav-cta" href="create.html">Start creating ↗</a>
+    </div>
+  </nav>
+
+  <header class="hero">
+    <div class="eyebrow-pill"><span></span> YOUR IDEA, YOUR MEMORIES, YOUR WEBSITE</div>
+    <h1>Make a little moment<br>feel <span class="grad">unforgettable.</span></h1>
+    <p>Create a personal, interactive website for someone special. Choose an occasion, pick a design, add your photos and words — no coding or design skills needed.</p>
+    <div class="cta">
+      <a class="btn" href="create.html">Create your website <span>↗</span></a>
+      <a class="btn ghost" href="#templates">Explore templates</a>
+    </div>
+    <div class="hero-note">Made for the people and moments that matter.</div>
+    <div class="hero-art" aria-label="Examples of different website styles">
+      <div class="art-tile art-love"><span class="art-emoji">💌</span><div><strong>A note from the heart</strong><br><small>Love & anniversaries</small></div></div>
+      <div class="art-tile art-birthday"><span class="art-emoji">🎂</span><div><strong>Make a wish</strong><br><small>Birthday surprises</small></div></div>
+      <div class="art-tile art-friends"><span class="art-emoji">📸</span><div><strong>Our kind of chaos</strong><br><small>Friendship memories</small></div></div>
+    </div>
+  </header>
+
+  <section class="section" id="how">
+    <div class="section-head"><div class="kicker">Simple by design</div><h2>From an idea to a surprise in four steps</h2><p>You bring the personal touch. Project Surprise handles the template and layout.</p></div>
+    <div class="steps">
+      <div class="card"><h3>Choose an occasion</h3><p>Love, birthdays, friendship, anniversaries, apologies or your own idea.</p></div>
+      <div class="card"><h3>Find your style</h3><p>Explore a few designs for each occasion and preview the look before choosing.</p></div>
+      <div class="card"><h3>Make it yours</h3><p>Add names, photos, a heartfelt message, a date and an optional surprise reveal.</p></div>
+      <div class="card"><h3>Preview & export</h3><p>Check the page on a phone-sized preview, then download the current prototype as HTML.</p></div>
+    </div>
+  </section>
+
+  <section class="section" id="templates">
+    <div class="section-head"><div class="kicker">Made for every kind of moment</div><h2>Find a style that feels like them</h2><p>Different moods for different occasions — from soft and romantic to playful, bold and minimal.</p></div>
+    <div class="grid template-grid" id="tplGrid"></div>
+    <div style="text-align:center;margin-top:26px"><a class="btn ghost" href="create.html">Browse all occasions <span>→</span></a></div>
+  </section>
+
+  <section class="section">
+    <div class="section-head"><div class="kicker">A personal touch</div><h2>More than a greeting card</h2><p>Little details help make every page feel personal.</p></div>
+    <div class="grid feature-grid">
+      <div class="card"><div class="ic">🖼️</div><h3>Your memories</h3><p>Add personal photos and turn them into a memory gallery.</p></div>
+      <div class="card"><div class="ic">✍️</div><h3>Your own words</h3><p>Write a letter, inside joke, birthday wish or a message that matters.</p></div>
+      <div class="card"><div class="ic">🎁</div><h3>A surprise reveal</h3><p>Add an optional reveal button with a message at the end.</p></div>
+      <div class="card"><div class="ic">📱</div><h3>Phone-friendly preview</h3><p>Check the design in a mobile-sized frame before exporting it.</p></div>
+    </div>
+  </section>
+
+  <section class="section" id="pricing">
+    <div class="section-head"><div class="kicker">Straightforward plans</div><h2>Pricing comes after the experience</h2><p>These are proposed tiers for testing, not live payment plans.</p></div>
+    <div class="grid">
+      <div class="card price-card"><span class="tag">STARTER</span><div class="price">₹49–99</div><div class="price-note">Proposed test range</div><ul class="mini-list"><li>One standard template</li><li>Personal message and photos</li><li>Basic interactions</li></ul></div>
+      <div class="card price-card featured"><span class="tag">MOST PERSONAL</span><div class="price">₹149–249</div><div class="price-note">Proposed test range</div><ul class="mini-list"><li>More design choices</li><li>Extra customization</li><li>Richer visual effects</li></ul></div>
+      <div class="card price-card"><span class="tag">CUSTOM</span><div class="price">Custom</div><div class="price-note">For special requests</div><ul class="mini-list"><li>Tailored layout</li><li>Extra sections</li><li>Manual design support</li></ul></div>
+    </div>
+  </section>
+
+  <div class="notice"><strong>Prototype note:</strong> This version saves generated websites in the current browser only. The “Publish” step is not real public hosting yet, and links created here will not work on another device. Use “Download HTML” to export a standalone page. Online hosting, verified payments and automatic link delivery are planned for a later phase.</div>
+  <footer class="site">© <span id="y"></span> Project Surprise · Small moments, made personal.</footer>
+</div>
+<script src="js/templates.js"></script>
+<script>
+document.getElementById('y').textContent = new Date().getFullYear();
+const grid = document.getElementById('tplGrid');
+PS.TEMPLATES.slice(0, 6).forEach(t => {
+  const a = document.createElement('a');
+  a.className = 'card template-card';
+  a.href = 'create.html?template=' + encodeURIComponent(t.id);
+  a.innerHTML = `<div class="template-art" style="background:${t.preview}"><span class="preview-icon">${t.emoji}</span><span class="preview-label">${t.occasion.length > 1 ? 'Versatile design' : 'Occasion design'}</span></div><div class="template-meta"><h3>${t.name}</h3><span class="arrow">↗</span></div><p>${t.desc}</p>`;
+  grid.appendChild(a);
+})
+</script>
+</body>
+</html>

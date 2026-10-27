@@ -1,0 +1,119 @@
+
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>A surprise for you</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="gate" id="msg" style="display:none">
+    <div class="card">
+      <div style="font-size:3rem">🔒</div>
+      <h3 id="mt"></h3>
+      <p id="mp"></p>
+      <div id="mx"></div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase.js"></script>
+  <script src="js/templates.js"></script>
+
+  <script>
+  (async function () {
+    const params = new URLSearchParams(location.search);
+    const msg = document.getElementById('msg');
+
+    function show(title, text, html = '') {
+      msg.style.display = 'grid';
+      document.getElementById('mt').textContent = title;
+      document.getElementById('mp').textContent = text;
+      document.getElementById('mx').innerHTML = html;
+    }
+
+    function render(site) {
+      document.open();
+      document.write(PS.renderSite(site));
+      document.close();
+    }
+
+    try {
+      const client = window.supabaseClient;
+
+      if (!client) {
+        throw new Error('Supabase client did not initialize.');
+      }
+
+      const slug = params.get('slug');
+      const id = params.get('id');
+
+      if (!slug && !id) {
+        show('Surprise not found', 'This link is missing its surprise ID or public slug.');
+        return;
+      }
+
+      let query = client
+        .from('surprises')
+        .select('id, public_slug, title, occasion, content, status')
+        .eq('status', 'published');
+
+      query = slug
+        ? query.eq('public_slug', slug)
+        : query.eq('id', id);
+
+      const { data, error } = await query.maybeSingle();
+
+      if (error) {
+        console.error('Supabase read error:', error);
+        show('Unable to load surprise', 'Please try again later.');
+        return;
+      }
+
+      if (!data) {
+        show('Surprise not found', 'This surprise may not exist or has not been published.');
+        return;
+      }
+
+      const site = {
+        ...data.content,
+        id: data.id,
+        title: data.title || data.content?.title,
+        occasion: data.occasion || data.content?.occasion,
+        public_slug: data.public_slug
+      };
+
+      if (site.password) {
+        show(
+          'This surprise is locked',
+          'Enter the access code you were given.',
+          '<input id="pw" placeholder="Access code" autocomplete="off">' +
+          '<button class="btn" id="go" style="width:100%">Open</button>' +
+          '<p id="err" style="color:var(--danger);margin-top:10px"></p>'
+        );
+
+        const tryOpen = () => {
+          if (document.getElementById('pw').value === site.password) {
+            render(site);
+          } else {
+            document.getElementById('err').textContent = 'Wrong code, try again.';
+          }
+        };
+
+        document.getElementById('go').onclick = tryOpen;
+        document.getElementById('pw').onkeydown = e => {
+          if (e.key === 'Enter') tryOpen();
+        };
+      } else {
+        render(site);
+      }
+    } catch (err) {
+      console.error(err);
+      show('Something went wrong', 'Please check your connection and try again.');
+    }
+  })();
+  </script>
+</body>
+</html>

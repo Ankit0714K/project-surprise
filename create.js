@@ -228,6 +228,8 @@ $("#toPublish").onclick = async () => {
 
     $("#link").value = "";
 $("#copy").disabled = true;
+    $("#publishOnline").disabled = false;
+    $("#publishOnline").textContent = "Publish & Generate Link";
 
 $("#open").onclick = () => {
   if (!published) {
@@ -247,7 +249,8 @@ $("#open").onclick = () => {
 };
 
     $("#shareWarn").textContent =
-      "Draft saved successfully! Public sharing is not enabled yet. You can download the HTML file below.";
+      "Draft saved successfully. Click Publish & Generate Link to make it available online.";
+
 
     go(4);
     console.log("Supabase draft saved:", row);
@@ -259,6 +262,52 @@ $("#open").onclick = () => {
     button.textContent = originalText;
   }
 };
+
+
+  $("#publishOnline").onclick = async () => {
+    if (!published || !published.id) {
+      alert("Please save your surprise draft first.");
+      return;
+    }
+
+    const button = $("#publishOnline");
+    const oldText = button.textContent;
+    button.disabled = true;
+    button.textContent = "Publishing...";
+
+    try {
+      const client = window.supabaseClient;
+      if (!client) throw new Error("Supabase client initialize nahi hua.");
+
+      const { data, error } = await client.functions.invoke("publish-surprise", {
+        body: { id: published.id }
+      });
+
+      if (error) throw error;
+      if (!data || data.success === false) {
+        throw new Error(data?.error || "Publish request successful nahi hui.");
+      }
+
+      const slug = data.slug || published.public_slug;
+      if (!slug) throw new Error("Publish ho gaya, lekin public slug response mein nahi mila.");
+
+      const publicUrl = new URL("view.html", window.location.href);
+      publicUrl.searchParams.set("slug", slug);
+      $("#link").value = publicUrl.href;
+      $("#copy").disabled = false;
+      $("#shareWarn").textContent = "Published successfully! Ab is link ko share kar sakte ho.";
+      button.textContent = "Published ✓";
+      published.status = "published";
+      published.public_slug = slug;
+      state.data = { ...state.data, status: "published", public_slug: slug };
+      persist();
+    } catch (error) {
+      console.error("Publish failed:", error);
+      $("#shareWarn").textContent = "Publish nahi hua: " + (error.message || "Unknown error") + ". Draft safe hai; dobara try kar sakte ho.";
+      button.disabled = false;
+      button.textContent = oldText;
+    }
+  };
 
   $("#copy").onclick = () => { navigator.clipboard.writeText($("#link").value); $("#copy").textContent = "Copied ✓"; setTimeout(() => ($("#copy").textContent = "Copy"), 1500); };
   $("#dl").onclick = () => {

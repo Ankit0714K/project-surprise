@@ -13,25 +13,18 @@
     <a class="logo" href="index.html"><span class="logo-mark">✦</span><span>Project <span class="grad">Surprise</span></span></a>
     <div class="navlinks"><a class="link" href="index.html">Home</a><a class="link" href="admin.html">My workspace</a></div>
   </nav>
-
   <div class="progress" id="progress"><div></div><div></div><div></div><div></div></div>
-
-  <!-- Step 1 -->
   <section class="panel" data-step="1">
     <div class="kicker">Step 01 · Start with the moment</div><h2>What are you celebrating?</h2>
     <p class="hint">Choose an occasion and we’ll show you designs that fit the feeling.</p>
     <div class="grid" id="occGrid"></div>
   </section>
-
-  <!-- Step 2 -->
   <section class="panel" data-step="2">
     <div class="kicker">Step 02 · Find your style</div><h2>Choose the look and feel</h2>
     <p class="hint">Each design has its own mood. Preview a sample, then choose your favourite.</p>
     <div class="grid" id="tplGrid"></div>
     <div class="actions"><button class="btn ghost" data-go="1">← Back</button></div>
   </section>
-
-  <!-- Step 3 -->
   <section class="panel" data-step="3">
     <div class="kicker">Step 03 · Add your personal touch</div><h2>Make it feel like them</h2>
     <p class="hint">Add your words and photos. The preview updates as you edit.</p>
@@ -43,102 +36,44 @@
         </div>
         <div class="field"><label>Headline</label><input name="title" placeholder="e.g. Happy Birthday, my favorite person"></div>
         <div class="field"><label>Small line above name</label><input name="eyebrow" placeholder="A little something for"></div>
-        <div class="field"><label>Your message / letter</label>
-          <textarea name="message" placeholder="Write from the heart…"></textarea></div>
-        <div class="field"><label>Photos (up to 6)</label>
-          <input type="file" id="photos" accept="image/*" multiple>
-          <div class="note">Images are resized in your browser to keep things light.</div>
-          <div class="thumbs" id="thumbs"></div></div>
+        <div class="field"><label>Your message / letter</label><textarea name="message" placeholder="Write from the heart…"></textarea></div>
+        <div class="field"><label>Photos (up to 6)</label><input type="file" id="photos" accept="image/*" multiple><div class="note">Images are resized in your browser to keep things light.</div><div class="thumbs" id="thumbs"></div></div>
         <div class="row2">
           <div class="field"><label>Special date (optional)</label><input type="date" name="date"></div>
           <div class="field"><label>Date label</label><input name="dateLabel" placeholder="Days since we met"></div>
         </div>
-        <div class="field"><label>Surprise reveal text (optional)</label>
-          <textarea name="surprise" style="min-height:80px" placeholder="Shown in a pop-up with confetti when they tap the button"></textarea></div>
+        <div class="field"><label>Surprise reveal text (optional)</label><textarea name="surprise" style="min-height:80px" placeholder="Shown in a pop-up with confetti when they tap the button"></textarea></div>
         <div class="row2">
           <div class="field"><label>Accent color</label><input type="color" name="accent" value="#e11d48"></div>
           <div class="field"><label>Access code (optional)</label><input name="password" placeholder="e.g. 1234"></div>
         </div>
         <div class="note" style="margin-top:-8px;margin-bottom:12px">The access code is a light gate for fun, not real security. Don't protect sensitive content with it.</div>
-        <div class="actions">
-          <button type="button" class="btn ghost" data-go="2">← Back</button>
-          <button type="button" class="btn" id="toPublish">Finish prototype →</button>
-        </div>
+        <div class="actions"><button type="button" class="btn ghost" data-go="2">← Back</button><button type="button" class="btn" id="toPublish">Finish prototype →</button></div>
       </form>
-
       <aside class="preview">
-        <div class="bar">
-          <span>Live preview</span>
-          <button class="btn ghost small" data-view="mobile">📱 Mobile</button>
-          <button class="btn ghost small" data-view="desktop">🖥 Desktop</button>
-        </div>
+        <div class="bar"><span>Live preview</span><button class="btn ghost small" data-view="mobile">📱 Mobile</button><button class="btn ghost small" data-view="desktop">🖥 Desktop</button></div>
         <div class="frame" id="frame"><iframe id="pv" sandbox="allow-scripts" title="Preview"></iframe></div>
       </aside>
     </div>
   </section>
-
-  <!-- Step 4 -->
-  
-<section class="panel" data-step="4">
-  <div class="result">
-    <div class="big">🎉</div>
-
-    <h2>Your surprise draft is saved!</h2>
-
-    <p class="hint">
-      Your design has been saved to your account's database.
-      You can preview it, download the HTML, or continue editing it.
-      Public sharing is not available yet.
-    </p>
-
-    <div class="linkbox">
-      <input
-        id="link"
-        readonly
-        placeholder="Public link will appear after publishing"
-        aria-label="Public surprise link"
-      >
-      <button class="btn small" id="copy" type="button" disabled>
-        Copy
-      </button>
+  <section class="panel" data-step="4">
+    <div class="result">
+      <div class="big">🎉</div><h2>Your surprise draft is saved!</h2>
+      <p class="hint">Your design has been saved to your account's database. You can preview it, download the HTML, or continue editing it. Public sharing is not available yet.</p>
+      <div class="linkbox"><input id="link" readonly placeholder="Public link will appear after publishing" aria-label="Public surprise link"><button class="btn small" id="copy" type="button" disabled>Copy</button></div>
+      <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+        <button class="btn" id="open" type="button">Preview surprise</button><button class="btn ghost" id="dl" type="button">⬇ Download HTML</button><button class="btn ghost" id="edit" type="button">✏ Continue editing</button>
+        <a class="btn ghost" href="create.html" onclick="sessionStorage.removeItem('ps_draft')">+ New surprise</a>
+      </div>
+      <div class="warn" id="shareWarn">Your draft is saved privately. Downloaded HTML is a separate file; it is not a published website. Online publishing and payment verification are not connected yet.</div>
     </div>
-
-    <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
-      <button class="btn" id="open" type="button">
-        Preview surprise
-      </button>
-
-      <button class="btn ghost" id="dl" type="button">
-        ⬇ Download HTML
-      </button>
-
-      <button class="btn ghost" id="edit" type="button">
-        ✏ Continue editing
-      </button>
-
-      <a
-        class="btn ghost"
-        href="create.html"
-        onclick="sessionStorage.removeItem('ps_draft')"
-      >
-        + New surprise
-      </a>
-    </div>
-
-    <div class="warn" id="shareWarn">
-      Your draft is saved privately. Downloaded HTML is a separate file;
-      it is not a published website. Online publishing and payment
-      verification are not connected yet.
-    </div>
-  </div>
-</section>
+  </section>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="js/supabase.js"></script>
-<script src="js/supabase-repository.js"></script>
+<script src="supabase.js"></script>
 <script src="templates.js"></script>
-<script src="js/store.js"></script>
-<script src="js/supabase-repository.js"></script>y
-<script src="js/create.js"></script>
+<script src="store.js"></script>
+<script src="supabase-repository.js"></script>
+<script src="create.js"></script>
 </body>
 </html>

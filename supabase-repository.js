@@ -22,19 +22,29 @@
   async function getUser() {
     const client = getClient();
 
-    const { data, error } = await client.auth.getSession();
+    // Reuse an existing session if one is already available.
+    const { data: sessionData, error: sessionError } =
+      await client.auth.getSession();
 
-    if (error) throw error;
+    if (sessionError) throw sessionError;
+    if (sessionData.session?.user) return sessionData.session.user;
 
-    if (!data.session) {
+    // Create a guest account automatically when this visitor has no session.
+    const { data, error } = await client.auth.signInAnonymously();
+
+    if (error) {
       throw new Error(
-        "Login session nahi mili. Page refresh karke dobara try karo."
+        "Automatic guest sign-in failed: " + error.message +
+        ". Supabase Dashboard mein Authentication settings ke andar Anonymous Sign-Ins enabled hone chahiye."
       );
     }
 
-    return data.session.user;
-  }
+    if (!data.user) {
+      throw new Error("Guest sign-in complete nahi hua. Page refresh karke dobara try karo.");
+    }
 
+    return data.user;
+  }
   function createSlug() {
     return crypto.randomUUID();
   }
